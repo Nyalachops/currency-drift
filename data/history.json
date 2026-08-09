@@ -1076,7 +1076,7 @@
     "trend": 5,
     "carry": 6,
     "value": 3,
-    "comp": -0.2,
+    "comp": -0.3,
     "rank": 6,
     "wk": -0.1
    },
@@ -1106,7 +1106,7 @@
    },
    "HKD": {
     "trend": null,
-    "carry": 6,
+    "carry": 7,
     "value": null,
     "comp": 1.5,
     "rank": 4,
@@ -1135,7 +1135,6 @@
    "HKD left top 3",
    "SGD entered bottom 3",
    "EUR left bottom 3",
-   "GBP flipped negative",
    "ZAR broke +1.5% week band"
   ]
  }

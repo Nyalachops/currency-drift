@@ -6,14 +6,13 @@
  "drift_churn": 8,
  "drift_band": "lively",
  "value_source": "BIS REER",
- "carry_source": "BIS CBPOL 0/10 + seed (CHF,CNY,EUR,GBP,HKD,JPY,MYR,SGD,USD,ZAR)",
+ "carry_source": "BIS CBPOL 9/10 + seed (SGD)",
  "rates_source": "ECB",
  "alerts": [
   "JPY entered top 3",
   "HKD left top 3",
   "SGD entered bottom 3",
   "EUR left bottom 3",
-  "GBP flipped negative",
   "ZAR broke +1.5% week band"
  ],
  "tiles": {
@@ -41,7 +40,7 @@
    "rank": 5,
    "wk": -0.31,
    "pegged": false,
-   "carry_rate_pct": 3.63,
+   "carry_rate_pct": 3.625,
    "sgd_per_unit": 1.2808853479525046
   },
   "EUR": {
@@ -59,11 +58,11 @@
    "trend": 5,
    "carry": 6,
    "value": 3,
-   "comp": -0.2,
+   "comp": -0.3,
    "rank": 6,
    "wk": -0.1,
    "pegged": false,
-   "carry_rate_pct": 4.0,
+   "carry_rate_pct": 3.75,
    "sgd_per_unit": 1.7227419160335589
   },
   "JPY": {
@@ -101,7 +100,7 @@
   },
   "HKD": {
    "trend": null,
-   "carry": 6,
+   "carry": 7,
    "value": null,
    "comp": 1.5,
    "rank": 4,
