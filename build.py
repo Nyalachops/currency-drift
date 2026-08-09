@@ -15,6 +15,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
+BUILD = "1.1"
 OFFLINE = "--offline" in sys.argv
 NO_SEND = "--no-send" in sys.argv or OFFLINE
 CFG = json.load(open(os.path.join(ROOT, "config.json")))
@@ -148,26 +149,69 @@ def zscores(raw):
 def lens_score(z):
     return {c: (None if v is None else max(0.0, min(10.0, 5 + 2.5 * v))) for c, v in z.items()}
 
+def parse_sdmx_csv(txt, code_field_hint):
+    """Header-driven SDMX-CSV parser tolerant of v1 and v2 layouts.
+    Returns {area_code: {period: value}}."""
+    rdr = csv.reader(io.StringIO(txt))
+    try:
+        header = next(rdr)
+    except StopIteration:
+        return {}
+    up = [h.strip().upper().replace('"', "") for h in header]
+    def col(*names):
+        for n in names:
+            if n in up:
+                return up.index(n)
+        return None
+    i_val = col("OBS_VALUE", "VALUE")
+    i_per = col("TIME_PERIOD", "TIME", "PERIOD")
+    i_area = col("REF_AREA", "REFERENCE_AREA", "AREA")
+    i_key = col("KEY", "SERIES_KEY", "TIMESERIES", "STRUCTURE_ID")
+    if i_val is None or i_per is None:
+        return {}
+    out = {}
+    for row in rdr:
+        if len(row) <= i_val:
+            continue
+        try:
+            val = float(row[i_val])
+        except ValueError:
+            continue
+        area = None
+        if i_area is not None and len(row) > i_area and re.fullmatch(r"[A-Z0-9]{2}", row[i_area].strip()):
+            area = row[i_area].strip()
+        elif i_key is not None and len(row) > i_key:
+            m = re.search(code_field_hint, row[i_key])
+            if m:
+                area = m.group(1)
+        if area:
+            out.setdefault(area, {})[row[i_per].strip()] = val
+    return out
+
+def bis_try_urls(urls, code_field_hint, min_areas):
+    last_err = None
+    for url in urls:
+        try:
+            txt = http_get(url, timeout=60)
+            series = parse_sdmx_csv(txt, code_field_hint)
+            if len(series) >= min_areas:
+                log(f"bis: hit {url.split('/api/')[1][:60]}")
+                return series
+            last_err = f"parsed {len(series)} areas"
+        except Exception as e:
+            last_err = str(e)[:80]
+    raise RuntimeError(last_err or "no url worked")
+
 def fetch_bis_reer():
     codes = "+".join(BIS_AREA[c] for c in CODES)
     start = f"{date.today().year - 11}-01"
-    url = CFG["sources"]["bis_eer"].format(codes=codes, start=start)
-    txt = http_get(url, timeout=60)
-    series = {}
-    rdr = csv.reader(io.StringIO(txt))
-    header = next(rdr)
-    idx = {h.upper(): i for i, h in enumerate(header)}
-    for row in rdr:
-        try:
-            key = row[idx.get("KEY", 0)]
-            period = row[idx.get("TIME_PERIOD", len(row) - 2)]
-            val = float(row[idx.get("OBS_VALUE", len(row) - 1)])
-        except Exception:
-            continue
-        m = re.search(r"\.([A-Z0-9]{2})$", key) or re.search(r"M\.R\.B\.([A-Z0-9]{2})", key)
-        if not m:
-            continue
-        series.setdefault(m.group(1), {})[period] = val
+    urls = [
+        f"https://stats.bis.org/api/v2/data/dataflow/BIS/WS_EER/1.0/M.R.B.{codes}?format=csv&startPeriod={start}",
+        f"https://stats.bis.org/api/v2/data/dataflow/BIS/WS_EER_M/1.0/M.R.B.{codes}?format=csv&startPeriod={start}",
+        f"https://stats.bis.org/api/v1/data/WS_EER_M/M.R.B.{codes}/all?format=csv&startPeriod={start}",
+        f"https://stats.bis.org/api/v1/data/WS_EER/M.R.B.{codes}/all?format=csv&startPeriod={start}",
+    ]
+    series = bis_try_urls(urls, r"M\.R\.B\.([A-Z0-9]{2})", len(CODES) - 1)
     area_to_code = {v: k for k, v in BIS_AREA.items()}
     out = {}
     for area, obs in series.items():
@@ -177,10 +221,29 @@ def fetch_bis_reer():
         periods = sorted(obs)
         latest = obs[periods[-1]]
         last10 = [obs[p] for p in periods[-120:]]
-        mean10 = sum(last10) / len(last10)
-        out[code] = -math.log(latest / mean10)
+        out[code] = -math.log(latest / (sum(last10) / len(last10)))
     if len(out) < len(CODES) - 1:
-        raise RuntimeError(f"BIS REER incomplete ({len(out)}/{len(CODES)})")
+        raise RuntimeError(f"REER incomplete ({len(out)}/{len(CODES)})")
+    return out
+
+def fetch_bis_cbpol():
+    codes = "+".join(BIS_AREA[c] for c in CODES)
+    start = f"{date.today().year - 1}-01"
+    urls = [
+        f"https://stats.bis.org/api/v2/data/dataflow/BIS/WS_CBPOL/1.0/D.{codes}?format=csv&startPeriod={start}",
+        f"https://stats.bis.org/api/v2/data/dataflow/BIS/WS_CBPOL_D/1.0/D.{codes}?format=csv&startPeriod={start}",
+        f"https://stats.bis.org/api/v1/data/WS_CBPOL_D/D.{codes}/all?format=csv&startPeriod={start}",
+        f"https://stats.bis.org/api/v1/data/WS_CBPOL/D.{codes}/all?format=csv&startPeriod={start}",
+    ]
+    series = bis_try_urls(urls, r"D\.([A-Z0-9]{2})", 3)
+    area_to_code = {v: k for k, v in BIS_AREA.items()}
+    out = {}
+    for area, obs in series.items():
+        code = area_to_code.get(area)
+        if code:
+            out[code] = obs[sorted(obs)[-1]]
+    if not out:
+        raise RuntimeError("CBPOL parsed 0 areas")
     return out
 
 def value_proxy(weeks, w_index, lookback):
@@ -318,7 +381,7 @@ def tile_phrase(kind, c, row, carry_rates, alerts, dr):
     band_hit = next((a for a in alerts if a.startswith(c) and "week band" in a), None)
     if band_hit:
         if "broke +" in band_hit:
-            return f"jumped the week band \u2014 carry {carry_rates[c]:.0f}% on top"
+            return f"jumped the week band — carry {carry_rates[c]:.0f}% on top"
         return f"paid {carry_rates[c]:.0f}% to wait, then broke the week band"
     if dr <= -2:
         return f"slid {abs(dr)} places this week"
@@ -365,7 +428,7 @@ def sign(n, dec=1):
     if n > 0:
         return f"+{abs(n):.{dec}f}"
     if n < 0:
-        return f"\u2212{abs(n):.{dec}f}"
+        return f"−{abs(n):.{dec}f}"
     return f"{0:.{dec}f}"
 
 # ---------------------------------------------------------------- svg bits
@@ -432,7 +495,8 @@ def wheel_svg(rows, order, churn_v, band, alert_ccys):
             parts.append(f'<line x1="{bx:.1f}" y1="{by:.1f}" x2="{tx:.1f}" y2="{ty:.1f}" stroke="var(--ghost)" stroke-width="1.5" stroke-opacity="0.75" stroke-dasharray="3 4"/>')
             parts.append(f'<circle cx="{tx:.1f}" cy="{ty:.1f}" r="{dotR:.1f}" fill="none" stroke="var(--ghost)" stroke-width="1.5" stroke-dasharray="2 3"/>')
         else:
-            parts.append(f'<line x1="{bx:.1f}" y1="{by:.1f}" x2="{tx:.1f}" y2="{ty:.1f}" stroke="{vc}" stroke-width="2.5" stroke-opacity="0.5" stroke-linecap="round"/>')
+            sc_col = "var(--teal)" if row["comp"] >= 0 else "var(--coral)"
+            parts.append(f'<line x1="{bx:.1f}" y1="{by:.1f}" x2="{tx:.1f}" y2="{ty:.1f}" stroke="{sc_col}" stroke-width="2.5" stroke-opacity="0.55" stroke-linecap="round"/>')
             parts.append(f'<circle cx="{tx:.1f}" cy="{ty:.1f}" r="{dotR + 3.5:.1f}" fill="none" stroke="{vc}" stroke-opacity="0.22" stroke-width="5"/>')
             pulse = ' style="animation:pulseDot 3s ease-in-out infinite"' if (c == top or c in alert_ccys) else ""
             parts.append(f'<circle cx="{tx:.1f}" cy="{ty:.1f}" r="{dotR:.1f}" fill="{vc}"{pulse}/>')
@@ -492,7 +556,7 @@ def render_page(state):
     def cssvars(p):
         return ";".join(f"--{k}:{v}" for k, v in p.items())
     tiles = ""
-    for kind, col, glyph in (("increase", "teal", "\u2191"), ("watch", "amber", "\u25c6"), ("reduce", "coral", "\u2193")):
+    for kind, col, glyph in (("increase", "teal", "↑"), ("watch", "amber", "◆"), ("reduce", "coral", "↓")):
         t = d["tiles"][kind]
         tiles += f'''<div class="tile" style="border-top:2px solid var(--{col})">
 <div class="tile-head"><span style="color:var(--{col})">{kind}</span><span style="color:var(--{col})">{glyph}</span></div>
@@ -502,7 +566,7 @@ def render_page(state):
     for c in order:
         r = rows[c]
         tag = "base" if c == BASE else ("peg" if c in PEGGED else "")
-        dash = "\u2013"
+        dash = "–"
         wkcol = "var(--teal)" if r["wk"] > 0 else ("var(--coral)" if r["wk"] < 0 else "var(--muted)")
         compcol = "var(--teal)" if r["comp"] > 0 else ("var(--coral)" if r["comp"] < 0 else "var(--muted)")
         vcol = val_color(r.get("value"), c in PEGGED)
@@ -517,13 +581,13 @@ def render_page(state):
 <td class="rgt">{spark_svg(d["sparks"][c], r["wk"])}</td></tr>'''
     alert_html = ""
     if d["alerts"]:
-        alert_html = f'''<div class="alert"><span class="alert-k">\u25b2 ALERT</span>
-<span class="alert-t">{" \u00b7 ".join(d["alerts"])}</span></div>'''
+        alert_html = f'''<div class="alert"><span class="alert-k">▲ ALERT</span>
+<span class="alert-t">{" · ".join(d["alerts"])}</span></div>'''
     html = f'''<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Currency Drift \u00b7 {d["week_label"]}</title>
+<title>Currency Drift · {d["week_label"]}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
@@ -579,9 +643,9 @@ footer{{margin-top:32px;font-family:'IBM Plex Mono',monospace;font-size:11px;col
 <header><div>
 <div class="eyebrow">{d["week_label"]}</div>
 <h1>Currency Drift</h1>
-<div class="sub">measured vs basket \u00b7 shown from {BASE}</div>
+<div class="sub">measured vs basket · shown from {BASE}</div>
 </div>
-<button class="toggle" id="tg" onclick="tgl()">\u25d0 <span id="tgt">Light</span></button>
+<button class="toggle" id="tg" onclick="tgl()">◐ <span id="tgt">Light</span></button>
 </header>
 <div class="tiles">{tiles}</div>
 <div class="wheelwrap"><div class="wheel">{d["wheel"]}</div>
@@ -590,13 +654,13 @@ footer{{margin-top:32px;font-family:'IBM Plex Mono',monospace;font-size:11px;col
 <span><span class="dot" style="background:var(--grey)"></span>fair</span>
 <span><span class="dot" style="background:var(--coral)"></span>rich</span>
 <span><span class="dotp"></span>pegged</span>
-<span>dot size = carry \u00b7 spoke = strength \u00b7 core = drift</span>
+<span>spoke = strength (±) · dot = carry, coloured by value · core = drift</span>
 </div></div>
 <div class="tablewrap"><table>
 <thead><tr><th>Rank</th><th>Ccy</th><th>Composite</th><th class="ctr">Trend</th><th class="ctr">Carry</th><th class="ctr">Value</th><th class="rgt">Wk%</th><th class="rgt">12w</th></tr></thead>
 <tbody>{trs}</tbody></table></div>
 {alert_html}
-<footer>data: {d["data_line"]} \u00b7 updates Saturdays \u00b7 base {BASE} \u00b7 data through {d["data_through"]} \u00b7 v{CFG["version"]}</footer>
+<footer>data: {d["data_line"]} · updates Saturdays · base {BASE} · data through {d["data_through"]} · v{BUILD}</footer>
 </div>
 <script>
 function setT(t){{document.documentElement.dataset.theme=t;document.getElementById('tgt').textContent=t==='light'?'Dark':'Light';try{{localStorage.setItem('cd-theme',t)}}catch(e){{}}}}
@@ -607,53 +671,125 @@ try{{var s=localStorage.getItem('cd-theme');if(s)setT(s)}}catch(e){{}}
     return html
 
 # ---------------------------------------------------------------- digest
+def email_bar(comp, comp_max, P):
+    """Diverging composite bar built from table cells (SVG is dead in Gmail)."""
+    half = 54
+    ln = int(min(abs(comp) / comp_max * half, half)) if comp_max else 0
+    neg = ln if comp < 0 else 0
+    pos = ln if comp > 0 else 0
+    cells = [f'<td width="{half - neg}" style="font-size:1px;line-height:9px">&nbsp;</td>']
+    if neg:
+        cells.append(f'<td width="{neg}" height="9" bgcolor="{P["coral"]}" style="font-size:1px;line-height:9px">&nbsp;</td>')
+    cells.append(f'<td width="2" height="13" bgcolor="{P["line"]}" style="font-size:1px;line-height:13px">&nbsp;</td>')
+    if pos:
+        cells.append(f'<td width="{pos}" height="9" bgcolor="{P["teal"]}" style="font-size:1px;line-height:9px">&nbsp;</td>')
+    cells.append(f'<td width="{half - pos}" style="font-size:1px;line-height:9px">&nbsp;</td>')
+    return ('<table cellpadding="0" cellspacing="0" border="0" style="display:inline-table;vertical-align:middle"><tr>'
+            + "".join(cells) + "</tr></table>")
+
+def email_spark(vals):
+    blocks = "▁▂▃▄▅▆▇█"
+    mn, mx = min(vals), max(vals)
+    return "".join(blocks[3] if mx == mn else blocks[round((v - mn) / (mx - mn) * 7)] for v in vals)
+
 def render_email(state):
     rows, order = state["rows"], state["order"]
-    P = {"bg": "#f4f0e7", "panel": "#ffffff", "txt": "#1a1712", "muted": "#6b6459",
-         "teal": "#0c8f7e", "coral": "#c8402f", "amber": "#9c6712", "border": "#e5e0d3"}
+    P = {"bg": "#0a0b0e", "panel": "#12151b", "txt": "#eceef2", "muted": "#7d838f",
+         "border": "#262b33", "line": "#3a404b", "teal": "#33d6bd", "coral": "#ff6a5c",
+         "amber": "#ffb84d", "grey": "#9aa0ab", "ghost": "#4c515b"}
+    MONO = "'Courier New',Courier,monospace"
+    SERIF = "Georgia,'Times New Roman',serif"
+
     def col(v):
         return P["teal"] if v > 0 else (P["coral"] if v < 0 else P["muted"])
+
+    comp_max = max(0.1, max(abs(rows[c]["comp"]) for c in CODES))
     t = state["tiles"]
     tilecells = ""
-    for kind, c in (("increase", P["teal"]), ("watch", P["amber"]), ("reduce", P["coral"])):
+    for kind, kcol, glyph in (("increase", P["teal"], "↑"),
+                              ("watch", P["amber"], "◆"),
+                              ("reduce", P["coral"], "↓")):
         tt = t[kind]
-        tilecells += f'''<td width="33%" style="padding:12px;border-top:3px solid {c};font-family:Georgia,serif">
-<div style="font-family:Courier,monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:{c}">{kind}</div>
-<div style="font-size:30px;margin:6px 0 4px;color:{P["txt"]}">{tt["ccy"]}</div>
-<div style="font-size:12px;font-style:italic;color:{P["muted"]}">{tt["why"]}</div></td>'''
+        tilecells += (
+            f'<td width="33%" valign="top" style="padding:14px 12px 4px;border-top:2px solid {kcol}">'
+            f'<table cellpadding="0" cellspacing="0" border="0" width="100%"><tr>'
+            f'<td style="font-family:{MONO};font-size:10px;letter-spacing:2px;text-transform:uppercase;color:{kcol}">{kind}</td>'
+            f'<td align="right" style="color:{kcol};font-size:12px">{glyph}</td></tr></table>'
+            f'<div style="font-family:{SERIF};font-size:34px;line-height:1;margin:10px 0 8px;color:{P["txt"]}">{tt["ccy"]}</div>'
+            f'<div style="font-family:{SERIF};font-size:12.5px;font-style:italic;color:{P["muted"]};line-height:1.4">{tt["why"]}</div></td>')
+
     rowshtml = ""
+    dash = "–"
     for c in order:
         r = rows[c]
-        dash = "\u2013"
-        rowshtml += f'''<tr>
-<td style="padding:7px 8px;color:{P["muted"]};font-size:12px">{r["rank"]}</td>
-<td style="padding:7px 8px;font-weight:bold;color:{P["txt"]}">{c}{" \u00b7 base" if c == BASE else (" \u00b7 peg" if c in PEGGED else "")}</td>
-<td style="padding:7px 8px;color:{col(r["comp"])};font-weight:bold">{sign(r["comp"])}</td>
-<td style="padding:7px 8px;text-align:center;color:{P["txt"]}">{dash if r["trend"] is None else r["trend"]}</td>
-<td style="padding:7px 8px;text-align:center;color:{P["txt"]}">{dash if r["carry"] is None else r["carry"]}</td>
-<td style="padding:7px 8px;text-align:center;color:{P["txt"]}">{dash if r["value"] is None else r["value"]}</td>
-<td style="padding:7px 8px;text-align:right;color:{col(r["wk"])}">{sign(r["wk"])}%</td></tr>'''
-    alerts = state["alerts"]
-    alerthtml = ""
-    if alerts:
-        alerthtml = f'''<tr><td style="padding:12px 14px;border:1px solid {P["amber"]};border-radius:8px;background:#fdf6e7;font-family:Courier,monospace;font-size:12px;color:{P["amber"]}">\u25b2 ALERT &nbsp;<span style="color:{P["txt"]}">{" \u00b7 ".join(alerts)}</span></td></tr>'''
+        tag = ""
+        if c == BASE or c in PEGGED:
+            word = "BASE" if c == BASE else "PEG"
+            tag = f' <span style="font-size:8px;letter-spacing:1px;color:{P["muted"]}">{word}</span>'
+        if r["value"] is None:
+            vcol = P["ghost"]
+        elif r["value"] >= 7:
+            vcol = P["teal"]
+        elif r["value"] <= 3:
+            vcol = P["coral"]
+        else:
+            vcol = P["grey"]
+        bd = f'border-bottom:1px solid {P["border"]}'
+        rowshtml += (
+            f'<tr><td style="padding:9px 8px;color:{P["muted"]};font-size:11px;font-family:{MONO};{bd}">{r["rank"]}</td>'
+            f'<td style="padding:9px 8px;font-weight:bold;color:{P["txt"]};font-family:{MONO};font-size:13px;{bd}">{c}{tag}</td>'
+            f'<td style="padding:9px 8px;{bd};white-space:nowrap">{email_bar(r["comp"], comp_max, P)}'
+            f'<span style="font-family:{MONO};font-size:12px;color:{col(r["comp"])}">&nbsp;{sign(r["comp"])}</span></td>'
+            f'<td align="center" style="padding:9px 6px;color:{P["txt"]};font-family:{MONO};font-size:12px;{bd}">{dash if r["trend"] is None else r["trend"]}</td>'
+            f'<td align="center" style="padding:9px 6px;color:{P["txt"]};font-family:{MONO};font-size:12px;{bd}">{dash if r["carry"] is None else r["carry"]}</td>'
+            f'<td align="center" style="padding:9px 6px;font-weight:bold;color:{vcol};font-family:{MONO};font-size:12px;{bd}">{dash if r["value"] is None else r["value"]}</td>'
+            f'<td align="right" style="padding:9px 8px;color:{col(r["wk"])};font-family:{MONO};font-size:12px;{bd}">{sign(r["wk"])}%</td>'
+            f'<td align="right" style="padding:9px 8px;color:{col(r["wk"])};font-family:{MONO};font-size:10px;letter-spacing:1px;{bd}">{email_spark(state["sparks"][c])}</td></tr>')
+
+    alert_block = ""
+    if state["alerts"]:
+        inner = (f'<table width="100%" cellpadding="0" cellspacing="0"><tr>'
+                 f'<td style="padding:12px 14px;border:1px solid #6b512a;border-radius:10px;background:#1c1710;'
+                 f'font-family:{MONO};font-size:11.5px;color:{P["amber"]}">▲ ALERT&nbsp;&nbsp;'
+                 f'<span style="color:{P["txt"]}">{" · ".join(state["alerts"])}</span></td></tr></table>')
+        alert_block = f'<tr><td style="padding:16px 30px 0">{inner}</td></tr>'
+
     link = ""
     if CFG.get("page_url"):
-        link = f'<tr><td style="padding:16px 0 0"><a href="{CFG["page_url"]}" style="font-family:Courier,monospace;font-size:12px;color:{P["teal"]}">Open the full dashboard \u2192</a></td></tr>'
-    return f'''<html><body style="margin:0;background:{P["bg"]};padding:24px 8px">
-<table width="640" align="center" cellpadding="0" cellspacing="0" style="background:{P["panel"]};border-radius:14px;padding:28px;border:1px solid {P["border"]}">
-<tr><td style="font-family:Courier,monospace;font-size:10px;letter-spacing:2px;color:{P["teal"]};text-transform:uppercase">{state["week_label"]}</td></tr>
-<tr><td style="font-family:Georgia,serif;font-size:40px;color:{P["txt"]};padding:6px 0 2px">Currency Drift</td></tr>
-<tr><td style="font-family:Courier,monospace;font-size:11px;color:{P["muted"]};padding-bottom:16px">measured vs basket \u00b7 shown from {BASE} \u00b7 drift {state["churn"]} ({state["band"]})</td></tr>
-<tr><td><table width="100%" cellpadding="0" cellspacing="0"><tr>{tilecells}</tr></table></td></tr>
-<tr><td style="padding-top:18px"><table width="100%" cellpadding="0" cellspacing="0" style="font-family:Courier,monospace;font-size:13px;border-top:1px solid {P["border"]}">
-<tr style="font-size:10px;letter-spacing:1px;color:{P["muted"]};text-transform:uppercase">
-<td style="padding:8px">#</td><td style="padding:8px">Ccy</td><td style="padding:8px">Comp</td><td style="padding:8px;text-align:center">T</td><td style="padding:8px;text-align:center">C</td><td style="padding:8px;text-align:center">V</td><td style="padding:8px;text-align:right">Wk%</td></tr>
-{rowshtml}</table></td></tr>
-{alerthtml}
-{link}
-<tr><td style="font-family:Courier,monospace;font-size:10px;color:{P["muted"]};padding-top:18px">data: {state["data_line"]} \u00b7 base {BASE} \u00b7 data through {state["data_through"]} \u00b7 v{CFG["version"]}</td></tr>
-</table></body></html>'''
+        link = (f'<tr><td align="center" style="padding:20px 0 4px">'
+                f'<a href="{CFG["page_url"]}" style="font-family:{MONO};font-size:12px;letter-spacing:1px;'
+                f'color:{P["bg"]};background:{P["teal"]};text-decoration:none;padding:10px 22px;'
+                f'border-radius:999px;display:inline-block">OPEN THE WHEEL →</a></td></tr>')
+
+    return (
+        f'<html><head><meta name="color-scheme" content="dark">'
+        f'<meta name="supported-color-schemes" content="dark"></head>'
+        f'<body style="margin:0;padding:0;background:{P["bg"]}">'
+        f'<table width="100%" cellpadding="0" cellspacing="0" bgcolor="{P["bg"]}"><tr><td align="center" style="padding:26px 8px">'
+        f'<table width="660" cellpadding="0" cellspacing="0" bgcolor="{P["panel"]}" '
+        f'style="background:{P["panel"]};border-radius:16px;border:1px solid {P["border"]}">'
+        f'<tr><td style="padding:30px 30px 0">'
+        f'<div style="font-family:{MONO};font-size:10px;letter-spacing:3px;color:{P["teal"]};text-transform:uppercase">{state["week_label"]}</div>'
+        f'<div style="font-family:{SERIF};font-size:42px;color:{P["txt"]};padding:8px 0 4px">Currency Drift</div>'
+        f'<div style="font-family:{MONO};font-size:11px;color:{P["muted"]}">measured vs basket · shown from {BASE} · drift {state["churn"]} · {state["band"]}</div>'
+        f'</td></tr>'
+        f'<tr><td style="padding:20px 30px 0"><table width="100%" cellpadding="0" cellspacing="0"><tr>{tilecells}</tr></table></td></tr>'
+        f'<tr><td style="padding:18px 30px 0"><table width="100%" cellpadding="0" cellspacing="0">'
+        f'<tr style="font-family:{MONO};font-size:9px;letter-spacing:2px;color:{P["muted"]};text-transform:uppercase">'
+        f'<td style="padding:6px 8px;border-bottom:1px solid {P["line"]}">#</td>'
+        f'<td style="padding:6px 8px;border-bottom:1px solid {P["line"]}">Ccy</td>'
+        f'<td style="padding:6px 8px;border-bottom:1px solid {P["line"]}">Composite</td>'
+        f'<td align="center" style="padding:6px;border-bottom:1px solid {P["line"]}">T</td>'
+        f'<td align="center" style="padding:6px;border-bottom:1px solid {P["line"]}">C</td>'
+        f'<td align="center" style="padding:6px;border-bottom:1px solid {P["line"]}">V</td>'
+        f'<td align="right" style="padding:6px 8px;border-bottom:1px solid {P["line"]}">Wk%</td>'
+        f'<td align="right" style="padding:6px 8px;border-bottom:1px solid {P["line"]}">12w</td></tr>'
+        f'{rowshtml}</table></td></tr>'
+        f'{alert_block}'
+        f'{link}'
+        f'<tr><td style="padding:16px 30px 26px;font-family:{MONO};font-size:9.5px;color:{P["muted"]};letter-spacing:1px">'
+        f'data: {state["data_line"]} · base {BASE} · through {state["data_through"]} · v{BUILD}</td></tr>'
+        f'</table></td></tr></table></body></html>')
 
 def send_email(state):
     user, pw = os.environ.get("EMAIL_USER"), os.environ.get("EMAIL_PASS")
@@ -663,8 +799,8 @@ def send_email(state):
         return
     msg = MIMEMultipart("alternative")
     n_alert = len(state["alerts"])
-    flag = f" \u00b7 {n_alert} alert{'s' if n_alert != 1 else ''}" if n_alert else ""
-    msg["Subject"] = f"Currency Drift \u00b7 {state['week_label']} \u00b7 {state['tiles']['increase']['ccy']} up, {state['tiles']['reduce']['ccy']} down{flag}"
+    flag = f" · {n_alert} alert{'s' if n_alert != 1 else ''}" if n_alert else ""
+    msg["Subject"] = f"Currency Drift · {state['week_label']} · {state['tiles']['increase']['ccy']} up, {state['tiles']['reduce']['ccy']} down{flag}"
     msg["From"], msg["To"] = user, to
     msg.attach(MIMEText(render_email(state), "html"))
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=ssl.create_default_context()) as s:
@@ -681,9 +817,29 @@ def send_whatsapp(state):
         log("whatsapp: no alerts, staying quiet")
         return
     t = state["tiles"]
-    text = (f"Currency Drift {state['week_label']}\n\u25b2 " + "\n\u25b2 ".join(state["alerts"][:6])
-            + f"\nIncrease {t['increase']['ccy']} \u00b7 Watch {t['watch']['ccy']} \u00b7 Reduce {t['reduce']['ccy']}"
-            + (f"\n{CFG['page_url']}" if CFG.get("page_url") else ""))
+    wk = state["week_label"].replace("Week ", "Wk ")
+    lines = [f"\U0001f9ed *Currency Drift* · {wk}",
+             f"\U0001f300 drift {state['churn']} · {state['band']}",
+             (f"\U0001f7e2 *{t['increase']['ccy']}* ↑  "
+              f"\U0001f7e1 *{t['watch']['ccy']}* ◆  "
+              f"\U0001f534 *{t['reduce']['ccy']}* ↓")]
+    for a in state["alerts"][:6]:
+        if "entered top 3" in a or "left bottom 3" in a:
+            g = "⬆️"
+        elif "left top 3" in a or "entered bottom 3" in a:
+            g = "⬇️"
+        elif "week band" in a:
+            g = "⚡"
+        elif "flipped positive" in a:
+            g = "\U0001f7e2"
+        elif "flipped negative" in a:
+            g = "\U0001f534"
+        else:
+            g = "•"
+        lines.append(f"{g} {a}")
+    if CFG.get("page_url"):
+        lines.append(f"\U0001f517 {CFG['page_url']}")
+    text = "\n".join(lines)
     url = ("https://api.callmebot.com/whatsapp.php?phone=" + urllib.parse.quote(phone)
            + "&apikey=" + urllib.parse.quote(key) + "&text=" + urllib.parse.quote(text))
     try:
@@ -708,7 +864,11 @@ def main():
             live = fetch_bis_cbpol()
             for c, v in live.items():
                 carry[c] = v
-            carry_src = f"BIS CBPOL ({len(live)}/10 live)"
+            if len(live) >= len(CODES):
+                carry_src = "BIS CBPOL live"
+            else:
+                missing = ",".join(sorted(set(CODES) - set(live)))
+                carry_src = f"BIS CBPOL {len(live)}/10 + seed ({missing})"
             log(f"carry: {carry_src}")
         except Exception as e:
             log(f"carry: BIS CBPOL failed ({e}); using seed")
@@ -753,8 +913,8 @@ def main():
     state = {
         "rows": cur, "order": order, "sparks": sparks, "alerts": alerts,
         "churn": churn_v, "band": band, "tiles": tiles,
-        "week_label": f"Week {iso_week} \u00b7 {week_date.strftime('%a %d %b')}",
-        "data_line": f"{rates_src} \u00b7 value: {value_src} \u00b7 carry: {carry_src}",
+        "week_label": f"Week {iso_week} · {week_date.strftime('%a %d %b')}",
+        "data_line": f"{rates_src} · value: {value_src} · carry: {carry_src}",
         "data_through": datetime.strptime(weeks[W][2], "%Y-%m-%d").date().strftime("%d %b %Y"),
     }
     state["wheel"] = wheel_svg(cur, order, churn_v, band, {a.split()[0] for a in alerts})
@@ -785,8 +945,12 @@ def main():
     json.dump(snap, open(os.path.join(ROOT, "fx_scores.json"), "w"), indent=1)
 
     open(os.path.join(ROOT, "index.html"), "w").write(render_page(state))
-    log(f"page: {state['week_label']} \u00b7 drift {churn_v} ({band}) \u00b7 alerts {len(alerts)}")
-    log(f"tiles: +{inc} \u00b7 watch {watch} \u00b7 \u2212{red}")
+    log(f"page: {state['week_label']} · drift {churn_v} ({band}) · alerts {len(alerts)}")
+    log(f"tiles: +{inc} · watch {watch} · −{red}")
+
+    if "--email-preview" in sys.argv:
+        open(os.path.join(ROOT, "email_preview.html"), "w").write(render_email(state))
+        log("email preview written")
 
     if not NO_SEND:
         try:
