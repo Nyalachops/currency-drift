@@ -15,7 +15,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-BUILD = "1.1"
+BUILD = "1.3"
 OFFLINE = "--offline" in sys.argv
 NO_SEND = "--no-send" in sys.argv or OFFLINE
 CFG = json.load(open(os.path.join(ROOT, "config.json")))
@@ -257,26 +257,6 @@ def value_proxy(weeks, w_index, lookback):
         out[c] = -(cur[c] - mean)
     return out
 
-def fetch_bis_cbpol():
-    codes = "+".join(BIS_AREA[c] for c in CODES)
-    url = CFG["sources"]["bis_cbpol"].format(codes=codes)
-    txt = http_get(url, timeout=60)
-    area_to_code = {v: k for k, v in BIS_AREA.items()}
-    out = {}
-    rdr = csv.reader(io.StringIO(txt))
-    header = next(rdr)
-    idx = {h.upper(): i for i, h in enumerate(header)}
-    for row in rdr:
-        try:
-            key = row[idx.get("KEY", 0)]
-            val = float(row[idx.get("OBS_VALUE", len(row) - 1)])
-        except Exception:
-            continue
-        m = re.search(r"D\.([A-Z0-9]{2})", key)
-        if m and m.group(1) in area_to_code:
-            out[area_to_code[m.group(1)]] = val
-    return out
-
 # ---------------------------------------------------------------- scoring
 def score_week(weeks, w, carry_rates, value_raw_override=None):
     cfgw = CFG["weights"]
@@ -381,7 +361,7 @@ def tile_phrase(kind, c, row, carry_rates, alerts, dr):
     band_hit = next((a for a in alerts if a.startswith(c) and "week band" in a), None)
     if band_hit:
         if "broke +" in band_hit:
-            return f"jumped the week band — carry {carry_rates[c]:.0f}% on top"
+            return f"jumped the week band \u2014 carry {carry_rates[c]:.0f}% on top"
         return f"paid {carry_rates[c]:.0f}% to wait, then broke the week band"
     if dr <= -2:
         return f"slid {abs(dr)} places this week"
@@ -428,7 +408,7 @@ def sign(n, dec=1):
     if n > 0:
         return f"+{abs(n):.{dec}f}"
     if n < 0:
-        return f"−{abs(n):.{dec}f}"
+        return f"\u2212{abs(n):.{dec}f}"
     return f"{0:.{dec}f}"
 
 # ---------------------------------------------------------------- svg bits
@@ -556,7 +536,7 @@ def render_page(state):
     def cssvars(p):
         return ";".join(f"--{k}:{v}" for k, v in p.items())
     tiles = ""
-    for kind, col, glyph in (("increase", "teal", "↑"), ("watch", "amber", "◆"), ("reduce", "coral", "↓")):
+    for kind, col, glyph in (("increase", "teal", "\u2191"), ("watch", "amber", "\u25c6"), ("reduce", "coral", "\u2193")):
         t = d["tiles"][kind]
         tiles += f'''<div class="tile" style="border-top:2px solid var(--{col})">
 <div class="tile-head"><span style="color:var(--{col})">{kind}</span><span style="color:var(--{col})">{glyph}</span></div>
@@ -566,7 +546,7 @@ def render_page(state):
     for c in order:
         r = rows[c]
         tag = "base" if c == BASE else ("peg" if c in PEGGED else "")
-        dash = "–"
+        dash = "\u2013"
         wkcol = "var(--teal)" if r["wk"] > 0 else ("var(--coral)" if r["wk"] < 0 else "var(--muted)")
         compcol = "var(--teal)" if r["comp"] > 0 else ("var(--coral)" if r["comp"] < 0 else "var(--muted)")
         vcol = val_color(r.get("value"), c in PEGGED)
@@ -581,13 +561,13 @@ def render_page(state):
 <td class="rgt">{spark_svg(d["sparks"][c], r["wk"])}</td></tr>'''
     alert_html = ""
     if d["alerts"]:
-        alert_html = f'''<div class="alert"><span class="alert-k">▲ ALERT</span>
-<span class="alert-t">{" · ".join(d["alerts"])}</span></div>'''
+        alert_html = f'''<div class="alert"><span class="alert-k">\u25b2 ALERT</span>
+<span class="alert-t">{" \u00b7 ".join(d["alerts"])}</span></div>'''
     html = f'''<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Currency Drift · {d["week_label"]}</title>
+<title>Currency Drift \u00b7 {d["week_label"]}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
@@ -643,9 +623,9 @@ footer{{margin-top:32px;font-family:'IBM Plex Mono',monospace;font-size:11px;col
 <header><div>
 <div class="eyebrow">{d["week_label"]}</div>
 <h1>Currency Drift</h1>
-<div class="sub">measured vs basket · shown from {BASE}</div>
+<div class="sub">measured vs basket \u00b7 shown from {BASE}</div>
 </div>
-<button class="toggle" id="tg" onclick="tgl()">◐ <span id="tgt">Light</span></button>
+<button class="toggle" id="tg" onclick="tgl()">\u25d0 <span id="tgt">Light</span></button>
 </header>
 <div class="tiles">{tiles}</div>
 <div class="wheelwrap"><div class="wheel">{d["wheel"]}</div>
@@ -654,13 +634,13 @@ footer{{margin-top:32px;font-family:'IBM Plex Mono',monospace;font-size:11px;col
 <span><span class="dot" style="background:var(--grey)"></span>fair</span>
 <span><span class="dot" style="background:var(--coral)"></span>rich</span>
 <span><span class="dotp"></span>pegged</span>
-<span>spoke = strength (±) · dot = carry, coloured by value · core = drift</span>
+<span>spoke = strength (\u00b1) \u00b7 dot = carry, coloured by value \u00b7 core = drift</span>
 </div></div>
 <div class="tablewrap"><table>
 <thead><tr><th>Rank</th><th>Ccy</th><th>Composite</th><th class="ctr">Trend</th><th class="ctr">Carry</th><th class="ctr">Value</th><th class="rgt">Wk%</th><th class="rgt">12w</th></tr></thead>
 <tbody>{trs}</tbody></table></div>
 {alert_html}
-<footer>data: {d["data_line"]} · updates Saturdays · base {BASE} · data through {d["data_through"]} · v{BUILD}</footer>
+<footer>data: {d["data_line"]} \u00b7 updates Saturdays \u00b7 base {BASE} \u00b7 data through {d["data_through"]} \u00b7 v{BUILD}</footer>
 </div>
 <script>
 function setT(t){{document.documentElement.dataset.theme=t;document.getElementById('tgt').textContent=t==='light'?'Dark':'Light';try{{localStorage.setItem('cd-theme',t)}}catch(e){{}}}}
@@ -688,7 +668,7 @@ def email_bar(comp, comp_max, P):
             + "".join(cells) + "</tr></table>")
 
 def email_spark(vals):
-    blocks = "▁▂▃▄▅▆▇█"
+    blocks = "\u2581\u2582\u2583\u2584\u2585\u2586\u2587\u2588"
     mn, mx = min(vals), max(vals)
     return "".join(blocks[3] if mx == mn else blocks[round((v - mn) / (mx - mn) * 7)] for v in vals)
 
@@ -706,9 +686,9 @@ def render_email(state):
     comp_max = max(0.1, max(abs(rows[c]["comp"]) for c in CODES))
     t = state["tiles"]
     tilecells = ""
-    for kind, kcol, glyph in (("increase", P["teal"], "↑"),
-                              ("watch", P["amber"], "◆"),
-                              ("reduce", P["coral"], "↓")):
+    for kind, kcol, glyph in (("increase", P["teal"], "\u2191"),
+                              ("watch", P["amber"], "\u25c6"),
+                              ("reduce", P["coral"], "\u2193")):
         tt = t[kind]
         tilecells += (
             f'<td width="33%" valign="top" style="padding:14px 12px 4px;border-top:2px solid {kcol}">'
@@ -719,7 +699,7 @@ def render_email(state):
             f'<div style="font-family:{SERIF};font-size:12.5px;font-style:italic;color:{P["muted"]};line-height:1.4">{tt["why"]}</div></td>')
 
     rowshtml = ""
-    dash = "–"
+    dash = "\u2013"
     for c in order:
         r = rows[c]
         tag = ""
@@ -750,16 +730,16 @@ def render_email(state):
     if state["alerts"]:
         inner = (f'<table width="100%" cellpadding="0" cellspacing="0"><tr>'
                  f'<td style="padding:12px 14px;border:1px solid #6b512a;border-radius:10px;background:#1c1710;'
-                 f'font-family:{MONO};font-size:11.5px;color:{P["amber"]}">▲ ALERT&nbsp;&nbsp;'
-                 f'<span style="color:{P["txt"]}">{" · ".join(state["alerts"])}</span></td></tr></table>')
+                 f'font-family:{MONO};font-size:11.5px;color:{P["amber"]}">\u25b2 ALERT&nbsp;&nbsp;'
+                 f'<span style="color:{P["txt"]}">{" \u00b7 ".join(state["alerts"])}</span></td></tr></table>')
         alert_block = f'<tr><td style="padding:16px 30px 0">{inner}</td></tr>'
 
     link = ""
     if CFG.get("page_url"):
         link = (f'<tr><td align="center" style="padding:20px 0 4px">'
-                f'<a href="{CFG["page_url"]}" style="font-family:{MONO};font-size:12px;letter-spacing:1px;'
+                f'<a href="{CFG["page_url"]}?w={state["week"]}" style="font-family:{MONO};font-size:12px;letter-spacing:1px;'
                 f'color:{P["bg"]};background:{P["teal"]};text-decoration:none;padding:10px 22px;'
-                f'border-radius:999px;display:inline-block">OPEN THE WHEEL →</a></td></tr>')
+                f'border-radius:999px;display:inline-block">OPEN THE WHEEL \u2192</a></td></tr>')
 
     return (
         f'<html><head><meta name="color-scheme" content="dark">'
@@ -771,7 +751,7 @@ def render_email(state):
         f'<tr><td style="padding:30px 30px 0">'
         f'<div style="font-family:{MONO};font-size:10px;letter-spacing:3px;color:{P["teal"]};text-transform:uppercase">{state["week_label"]}</div>'
         f'<div style="font-family:{SERIF};font-size:42px;color:{P["txt"]};padding:8px 0 4px">Currency Drift</div>'
-        f'<div style="font-family:{MONO};font-size:11px;color:{P["muted"]}">measured vs basket · shown from {BASE} · drift {state["churn"]} · {state["band"]}</div>'
+        f'<div style="font-family:{MONO};font-size:11px;color:{P["muted"]}">measured vs basket \u00b7 shown from {BASE} \u00b7 drift {state["churn"]} \u00b7 {state["band"]}</div>'
         f'</td></tr>'
         f'<tr><td style="padding:20px 30px 0"><table width="100%" cellpadding="0" cellspacing="0"><tr>{tilecells}</tr></table></td></tr>'
         f'<tr><td style="padding:18px 30px 0"><table width="100%" cellpadding="0" cellspacing="0">'
@@ -788,7 +768,7 @@ def render_email(state):
         f'{alert_block}'
         f'{link}'
         f'<tr><td style="padding:16px 30px 26px;font-family:{MONO};font-size:9.5px;color:{P["muted"]};letter-spacing:1px">'
-        f'data: {state["data_line"]} · base {BASE} · through {state["data_through"]} · v{BUILD}</td></tr>'
+        f'data: {state["data_line"]} \u00b7 base {BASE} \u00b7 through {state["data_through"]} \u00b7 v{BUILD}</td></tr>'
         f'</table></td></tr></table></body></html>')
 
 def send_email(state):
@@ -799,8 +779,8 @@ def send_email(state):
         return
     msg = MIMEMultipart("alternative")
     n_alert = len(state["alerts"])
-    flag = f" · {n_alert} alert{'s' if n_alert != 1 else ''}" if n_alert else ""
-    msg["Subject"] = f"Currency Drift · {state['week_label']} · {state['tiles']['increase']['ccy']} up, {state['tiles']['reduce']['ccy']} down{flag}"
+    flag = f" \u00b7 {n_alert} alert{'s' if n_alert != 1 else ''}" if n_alert else ""
+    msg["Subject"] = f"Currency Drift \u00b7 {state['week_label']} \u00b7 {state['tiles']['increase']['ccy']} up, {state['tiles']['reduce']['ccy']} down{flag}"
     msg["From"], msg["To"] = user, to
     msg.attach(MIMEText(render_email(state), "html"))
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=ssl.create_default_context()) as s:
@@ -818,27 +798,27 @@ def send_whatsapp(state):
         return
     t = state["tiles"]
     wk = state["week_label"].replace("Week ", "Wk ")
-    lines = [f"\U0001f9ed *Currency Drift* · {wk}",
-             f"\U0001f300 drift {state['churn']} · {state['band']}",
-             (f"\U0001f7e2 *{t['increase']['ccy']}* ↑  "
-              f"\U0001f7e1 *{t['watch']['ccy']}* ◆  "
-              f"\U0001f534 *{t['reduce']['ccy']}* ↓")]
+    lines = [f"\U0001f9ed *Currency Drift* \u00b7 {wk}",
+             f"\U0001f300 drift {state['churn']} \u00b7 {state['band']}",
+             (f"\U0001f7e2 *{t['increase']['ccy']}* \u2191  "
+              f"\U0001f7e1 *{t['watch']['ccy']}* \u25c6  "
+              f"\U0001f534 *{t['reduce']['ccy']}* \u2193")]
     for a in state["alerts"][:6]:
         if "entered top 3" in a or "left bottom 3" in a:
-            g = "⬆️"
+            g = "\u2b06\ufe0f"
         elif "left top 3" in a or "entered bottom 3" in a:
-            g = "⬇️"
+            g = "\u2b07\ufe0f"
         elif "week band" in a:
-            g = "⚡"
+            g = "\u26a1"
         elif "flipped positive" in a:
             g = "\U0001f7e2"
         elif "flipped negative" in a:
             g = "\U0001f534"
         else:
-            g = "•"
+            g = "\u2022"
         lines.append(f"{g} {a}")
     if CFG.get("page_url"):
-        lines.append(f"\U0001f517 {CFG['page_url']}")
+        lines.append(f"\U0001f517 {CFG['page_url']}?w={state['week']}")
     text = "\n".join(lines)
     url = ("https://api.callmebot.com/whatsapp.php?phone=" + urllib.parse.quote(phone)
            + "&apikey=" + urllib.parse.quote(key) + "&text=" + urllib.parse.quote(text))
@@ -913,8 +893,9 @@ def main():
     state = {
         "rows": cur, "order": order, "sparks": sparks, "alerts": alerts,
         "churn": churn_v, "band": band, "tiles": tiles,
-        "week_label": f"Week {iso_week} · {week_date.strftime('%a %d %b')}",
-        "data_line": f"{rates_src} · value: {value_src} · carry: {carry_src}",
+        "week": weeks[W][0],
+        "week_label": f"Week {iso_week} \u00b7 {week_date.strftime('%a %d %b')}",
+        "data_line": f"{rates_src} \u00b7 value: {value_src} \u00b7 carry: {carry_src}",
         "data_through": datetime.strptime(weeks[W][2], "%Y-%m-%d").date().strftime("%d %b %Y"),
     }
     state["wheel"] = wheel_svg(cur, order, churn_v, band, {a.split()[0] for a in alerts})
@@ -945,8 +926,8 @@ def main():
     json.dump(snap, open(os.path.join(ROOT, "fx_scores.json"), "w"), indent=1)
 
     open(os.path.join(ROOT, "index.html"), "w").write(render_page(state))
-    log(f"page: {state['week_label']} · drift {churn_v} ({band}) · alerts {len(alerts)}")
-    log(f"tiles: +{inc} · watch {watch} · −{red}")
+    log(f"page: {state['week_label']} \u00b7 drift {churn_v} ({band}) \u00b7 alerts {len(alerts)}")
+    log(f"tiles: +{inc} \u00b7 watch {watch} \u00b7 \u2212{red}")
 
     if "--email-preview" in sys.argv:
         open(os.path.join(ROOT, "email_preview.html"), "w").write(render_email(state))
