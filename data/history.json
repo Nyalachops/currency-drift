@@ -1,0 +1,1048 @@
+[
+ {
+  "week": "2026-05-15",
+  "rows": {
+   "SGD": {
+    "trend": 5,
+    "carry": 3,
+    "value": 4,
+    "comp": -1.0,
+    "rank": 8,
+    "wk": 0.0
+   },
+   "USD": {
+    "trend": 6,
+    "carry": 6,
+    "value": 5,
+    "comp": 0.6,
+    "rank": 4,
+    "wk": 0.96
+   },
+   "EUR": {
+    "trend": 4,
+    "carry": 4,
+    "value": 4,
+    "comp": -1.0,
+    "rank": 9,
+    "wk": -0.18
+   },
+   "GBP": {
+    "trend": 5,
+    "carry": 6,
+    "value": 4,
+    "comp": 0.1,
+    "rank": 6,
+    "wk": -0.91
+   },
+   "JPY": {
+    "trend": 0,
+    "carry": 3,
+    "value": 10,
+    "comp": 0.3,
+    "rank": 5,
+    "wk": -0.19
+   },
+   "CHF": {
+    "trend": 4,
+    "carry": 1,
+    "value": 1,
+    "comp": -3.1,
+    "rank": 10,
+    "wk": -0.05
+   },
+   "CNY": {
+    "trend": 10,
+    "carry": 5,
+    "value": 5,
+    "comp": 1.6,
+    "rank": 2,
+    "wk": 0.82
+   },
+   "HKD": {
+    "trend": null,
+    "carry": 6,
+    "value": null,
+    "comp": 1.5,
+    "rank": 3,
+    "wk": 0.92
+   },
+   "MYR": {
+    "trend": 8,
+    "carry": 5,
+    "value": 3,
+    "comp": 0.1,
+    "rank": 7,
+    "wk": 0.19
+   },
+   "ZAR": {
+    "trend": 4,
+    "carry": 10,
+    "value": 7,
+    "comp": 1.9,
+    "rank": 1,
+    "wk": -0.51
+   }
+  },
+  "churn": 10,
+  "backfilled": true
+ },
+ {
+  "week": "2026-05-22",
+  "rows": {
+   "SGD": {
+    "trend": 5,
+    "carry": 3,
+    "value": 4,
+    "comp": -1.1,
+    "rank": 8,
+    "wk": 0.0
+   },
+   "USD": {
+    "trend": 5,
+    "carry": 6,
+    "value": 5,
+    "comp": 0.2,
+    "rank": 6,
+    "wk": 0.03
+   },
+   "EUR": {
+    "trend": 3,
+    "carry": 4,
+    "value": 4,
+    "comp": -1.1,
+    "rank": 9,
+    "wk": -0.26
+   },
+   "GBP": {
+    "trend": 6,
+    "carry": 6,
+    "value": 4,
+    "comp": 0.5,
+    "rank": 4,
+    "wk": 0.47
+   },
+   "JPY": {
+    "trend": 0,
+    "carry": 3,
+    "value": 10,
+    "comp": 0.3,
+    "rank": 5,
+    "wk": -0.35
+   },
+   "CHF": {
+    "trend": 5,
+    "carry": 1,
+    "value": 1,
+    "comp": -2.7,
+    "rank": 10,
+    "wk": 0.02
+   },
+   "CNY": {
+    "trend": 10,
+    "carry": 5,
+    "value": 5,
+    "comp": 1.6,
+    "rank": 2,
+    "wk": 0.25
+   },
+   "HKD": {
+    "trend": null,
+    "carry": 6,
+    "value": null,
+    "comp": 1.5,
+    "rank": 3,
+    "wk": -0.04
+   },
+   "MYR": {
+    "trend": 6,
+    "carry": 5,
+    "value": 3,
+    "comp": -0.3,
+    "rank": 7,
+    "wk": -0.4
+   },
+   "ZAR": {
+    "trend": 6,
+    "carry": 10,
+    "value": 6,
+    "comp": 2.5,
+    "rank": 1,
+    "wk": 1.15
+   }
+  },
+  "churn": 4,
+  "backfilled": true
+ },
+ {
+  "week": "2026-05-29",
+  "rows": {
+   "SGD": {
+    "trend": 5,
+    "carry": 3,
+    "value": 4,
+    "comp": -1.2,
+    "rank": 9,
+    "wk": 0.0
+   },
+   "USD": {
+    "trend": 5,
+    "carry": 6,
+    "value": 5,
+    "comp": 0.3,
+    "rank": 4,
+    "wk": -0.26
+   },
+   "EUR": {
+    "trend": 3,
+    "carry": 4,
+    "value": 4,
+    "comp": -1.0,
+    "rank": 8,
+    "wk": 0.16
+   },
+   "GBP": {
+    "trend": 6,
+    "carry": 6,
+    "value": 4,
+    "comp": 0.3,
+    "rank": 5,
+    "wk": -0.19
+   },
+   "JPY": {
+    "trend": 0,
+    "carry": 3,
+    "value": 10,
+    "comp": 0.3,
+    "rank": 6,
+    "wk": -0.34
+   },
+   "CHF": {
+    "trend": 5,
+    "carry": 1,
+    "value": 1,
+    "comp": -2.6,
+    "rank": 10,
+    "wk": 0.25
+   },
+   "CNY": {
+    "trend": 10,
+    "carry": 5,
+    "value": 5,
+    "comp": 1.6,
+    "rank": 2,
+    "wk": 0.16
+   },
+   "HKD": {
+    "trend": null,
+    "carry": 6,
+    "value": null,
+    "comp": 1.5,
+    "rank": 3,
+    "wk": -0.25
+   },
+   "MYR": {
+    "trend": 6,
+    "carry": 5,
+    "value": 3,
+    "comp": -0.5,
+    "rank": 7,
+    "wk": -0.18
+   },
+   "ZAR": {
+    "trend": 7,
+    "carry": 10,
+    "value": 6,
+    "comp": 2.6,
+    "rank": 1,
+    "wk": 1.29
+   }
+  },
+  "churn": 6,
+  "backfilled": true
+ },
+ {
+  "week": "2026-06-05",
+  "rows": {
+   "SGD": {
+    "trend": 5,
+    "carry": 3,
+    "value": 4,
+    "comp": -1.3,
+    "rank": 9,
+    "wk": 0.0
+   },
+   "USD": {
+    "trend": 4,
+    "carry": 6,
+    "value": 5,
+    "comp": 0.1,
+    "rank": 6,
+    "wk": 0.5
+   },
+   "EUR": {
+    "trend": 5,
+    "carry": 4,
+    "value": 4,
+    "comp": -0.6,
+    "rank": 7,
+    "wk": 0.46
+   },
+   "GBP": {
+    "trend": 6,
+    "carry": 6,
+    "value": 4,
+    "comp": 0.3,
+    "rank": 5,
+    "wk": 0.8
+   },
+   "JPY": {
+    "trend": 1,
+    "carry": 3,
+    "value": 10,
+    "comp": 0.6,
+    "rank": 4,
+    "wk": 0.12
+   },
+   "CHF": {
+    "trend": 5,
+    "carry": 1,
+    "value": 1,
+    "comp": -2.8,
+    "rank": 10,
+    "wk": -0.24
+   },
+   "CNY": {
+    "trend": 9,
+    "carry": 5,
+    "value": 5,
+    "comp": 1.2,
+    "rank": 3,
+    "wk": 0.52
+   },
+   "HKD": {
+    "trend": null,
+    "carry": 6,
+    "value": null,
+    "comp": 1.5,
+    "rank": 2,
+    "wk": 0.52
+   },
+   "MYR": {
+    "trend": 3,
+    "carry": 5,
+    "value": 4,
+    "comp": -1.1,
+    "rank": 8,
+    "wk": -1.07
+   },
+   "ZAR": {
+    "trend": 10,
+    "carry": 10,
+    "value": 6,
+    "comp": 3.4,
+    "rank": 1,
+    "wk": 0.21
+   }
+  },
+  "churn": 8,
+  "backfilled": true
+ },
+ {
+  "week": "2026-06-12",
+  "rows": {
+   "SGD": {
+    "trend": 5,
+    "carry": 3,
+    "value": 4,
+    "comp": -1.3,
+    "rank": 8,
+    "wk": 0.0
+   },
+   "USD": {
+    "trend": 5,
+    "carry": 6,
+    "value": 5,
+    "comp": 0.2,
+    "rank": 6,
+    "wk": 0.06
+   },
+   "EUR": {
+    "trend": 4,
+    "carry": 4,
+    "value": 4,
+    "comp": -0.7,
+    "rank": 7,
+    "wk": -0.57
+   },
+   "GBP": {
+    "trend": 6,
+    "carry": 6,
+    "value": 4,
+    "comp": 0.3,
+    "rank": 5,
+    "wk": -0.42
+   },
+   "JPY": {
+    "trend": 2,
+    "carry": 3,
+    "value": 10,
+    "comp": 1.1,
+    "rank": 4,
+    "wk": -0.15
+   },
+   "CHF": {
+    "trend": 3,
+    "carry": 1,
+    "value": 1,
+    "comp": -3.2,
+    "rank": 10,
+    "wk": -1.02
+   },
+   "CNY": {
+    "trend": 9,
+    "carry": 5,
+    "value": 5,
+    "comp": 1.2,
+    "rank": 3,
+    "wk": 0.11
+   },
+   "HKD": {
+    "trend": null,
+    "carry": 6,
+    "value": null,
+    "comp": 1.5,
+    "rank": 2,
+    "wk": 0.04
+   },
+   "MYR": {
+    "trend": 2,
+    "carry": 5,
+    "value": 4,
+    "comp": -1.4,
+    "rank": 9,
+    "wk": -0.67
+   },
+   "ZAR": {
+    "trend": 10,
+    "carry": 10,
+    "value": 6,
+    "comp": 3.5,
+    "rank": 1,
+    "wk": -0.14
+   }
+  },
+  "churn": 2,
+  "backfilled": true
+ },
+ {
+  "week": "2026-06-19",
+  "rows": {
+   "SGD": {
+    "trend": 5,
+    "carry": 3,
+    "value": 4,
+    "comp": -1.2,
+    "rank": 8,
+    "wk": 0.0
+   },
+   "USD": {
+    "trend": 6,
+    "carry": 6,
+    "value": 5,
+    "comp": 0.5,
+    "rank": 5,
+    "wk": 0.53
+   },
+   "EUR": {
+    "trend": 4,
+    "carry": 4,
+    "value": 4,
+    "comp": -0.8,
+    "rank": 7,
+    "wk": -0.34
+   },
+   "GBP": {
+    "trend": 4,
+    "carry": 6,
+    "value": 4,
+    "comp": -0.0,
+    "rank": 6,
+    "wk": -0.74
+   },
+   "JPY": {
+    "trend": 3,
+    "carry": 3,
+    "value": 10,
+    "comp": 1.4,
+    "rank": 3,
+    "wk": -0.11
+   },
+   "CHF": {
+    "trend": 3,
+    "carry": 1,
+    "value": 1,
+    "comp": -3.2,
+    "rank": 10,
+    "wk": -0.67
+   },
+   "CNY": {
+    "trend": 10,
+    "carry": 5,
+    "value": 5,
+    "comp": 1.2,
+    "rank": 4,
+    "wk": 0.43
+   },
+   "HKD": {
+    "trend": null,
+    "carry": 6,
+    "value": null,
+    "comp": 1.5,
+    "rank": 2,
+    "wk": 0.49
+   },
+   "MYR": {
+    "trend": 1,
+    "carry": 5,
+    "value": 4,
+    "comp": -1.7,
+    "rank": 9,
+    "wk": -1.4
+   },
+   "ZAR": {
+    "trend": 9,
+    "carry": 10,
+    "value": 6,
+    "comp": 3.2,
+    "rank": 1,
+    "wk": -0.51
+   }
+  },
+  "churn": 4,
+  "backfilled": true
+ },
+ {
+  "week": "2026-06-26",
+  "rows": {
+   "SGD": {
+    "trend": 5,
+    "carry": 3,
+    "value": 4,
+    "comp": -1.3,
+    "rank": 9,
+    "wk": 0.0
+   },
+   "USD": {
+    "trend": 6,
+    "carry": 6,
+    "value": 5,
+    "comp": 0.4,
+    "rank": 5,
+    "wk": 0.25
+   },
+   "EUR": {
+    "trend": 3,
+    "carry": 4,
+    "value": 4,
+    "comp": -1.1,
+    "rank": 8,
+    "wk": -0.33
+   },
+   "GBP": {
+    "trend": 4,
+    "carry": 6,
+    "value": 4,
+    "comp": -0.1,
+    "rank": 6,
+    "wk": 0.13
+   },
+   "JPY": {
+    "trend": 3,
+    "carry": 3,
+    "value": 10,
+    "comp": 1.2,
+    "rank": 3,
+    "wk": -0.01
+   },
+   "CHF": {
+    "trend": 3,
+    "carry": 1,
+    "value": 1,
+    "comp": -3.2,
+    "rank": 10,
+    "wk": -0.01
+   },
+   "CNY": {
+    "trend": 9,
+    "carry": 5,
+    "value": 5,
+    "comp": 1.1,
+    "rank": 4,
+    "wk": -0.18
+   },
+   "HKD": {
+    "trend": null,
+    "carry": 6,
+    "value": null,
+    "comp": 1.5,
+    "rank": 2,
+    "wk": 0.2
+   },
+   "MYR": {
+    "trend": 3,
+    "carry": 5,
+    "value": 4,
+    "comp": -1.0,
+    "rank": 7,
+    "wk": 1.46
+   },
+   "ZAR": {
+    "trend": 10,
+    "carry": 10,
+    "value": 6,
+    "comp": 3.6,
+    "rank": 1,
+    "wk": 0.33
+   }
+  },
+  "churn": 4,
+  "backfilled": true
+ },
+ {
+  "week": "2026-07-03",
+  "rows": {
+   "SGD": {
+    "trend": 4,
+    "carry": 3,
+    "value": 4,
+    "comp": -1.4,
+    "rank": 9,
+    "wk": 0.0
+   },
+   "USD": {
+    "trend": 5,
+    "carry": 6,
+    "value": 5,
+    "comp": 0.2,
+    "rank": 5,
+    "wk": -0.28
+   },
+   "EUR": {
+    "trend": 3,
+    "carry": 4,
+    "value": 4,
+    "comp": -1.2,
+    "rank": 8,
+    "wk": 0.13
+   },
+   "GBP": {
+    "trend": 5,
+    "carry": 6,
+    "value": 4,
+    "comp": 0.2,
+    "rank": 6,
+    "wk": 0.75
+   },
+   "JPY": {
+    "trend": 2,
+    "carry": 3,
+    "value": 10,
+    "comp": 1.1,
+    "rank": 3,
+    "wk": 0.02
+   },
+   "CHF": {
+    "trend": 4,
+    "carry": 1,
+    "value": 1,
+    "comp": -3.0,
+    "rank": 10,
+    "wk": 0.43
+   },
+   "CNY": {
+    "trend": 8,
+    "carry": 5,
+    "value": 5,
+    "comp": 1.0,
+    "rank": 4,
+    "wk": -0.04
+   },
+   "HKD": {
+    "trend": null,
+    "carry": 6,
+    "value": null,
+    "comp": 1.5,
+    "rank": 2,
+    "wk": -0.3
+   },
+   "MYR": {
+    "trend": 4,
+    "carry": 5,
+    "value": 4,
+    "comp": -0.9,
+    "rank": 7,
+    "wk": 0.12
+   },
+   "ZAR": {
+    "trend": 10,
+    "carry": 10,
+    "value": 6,
+    "comp": 3.6,
+    "rank": 1,
+    "wk": 1.24
+   }
+  },
+  "churn": 0,
+  "backfilled": true
+ },
+ {
+  "week": "2026-07-10",
+  "rows": {
+   "SGD": {
+    "trend": 4,
+    "carry": 3,
+    "value": 4,
+    "comp": -1.4,
+    "rank": 8,
+    "wk": 0.0
+   },
+   "USD": {
+    "trend": 6,
+    "carry": 6,
+    "value": 5,
+    "comp": 0.7,
+    "rank": 5,
+    "wk": 0.04
+   },
+   "EUR": {
+    "trend": 2,
+    "carry": 4,
+    "value": 4,
+    "comp": -1.4,
+    "rank": 9,
+    "wk": -0.12
+   },
+   "GBP": {
+    "trend": 6,
+    "carry": 6,
+    "value": 4,
+    "comp": 0.4,
+    "rank": 6,
+    "wk": 0.55
+   },
+   "JPY": {
+    "trend": 2,
+    "carry": 3,
+    "value": 10,
+    "comp": 1.1,
+    "rank": 4,
+    "wk": -0.4
+   },
+   "CHF": {
+    "trend": 3,
+    "carry": 1,
+    "value": 2,
+    "comp": -3.2,
+    "rank": 10,
+    "wk": -0.47
+   },
+   "CNY": {
+    "trend": 10,
+    "carry": 5,
+    "value": 5,
+    "comp": 1.3,
+    "rank": 3,
+    "wk": 0.14
+   },
+   "HKD": {
+    "trend": null,
+    "carry": 6,
+    "value": null,
+    "comp": 1.5,
+    "rank": 2,
+    "wk": 0.09
+   },
+   "MYR": {
+    "trend": 3,
+    "carry": 5,
+    "value": 4,
+    "comp": -1.1,
+    "rank": 7,
+    "wk": 0.07
+   },
+   "ZAR": {
+    "trend": 8,
+    "carry": 10,
+    "value": 6,
+    "comp": 3.0,
+    "rank": 1,
+    "wk": -0.62
+   }
+  },
+  "churn": 4,
+  "backfilled": true
+ },
+ {
+  "week": "2026-07-17",
+  "rows": {
+   "SGD": {
+    "trend": 5,
+    "carry": 3,
+    "value": 4,
+    "comp": -1.2,
+    "rank": 7,
+    "wk": 0.0
+   },
+   "USD": {
+    "trend": 7,
+    "carry": 6,
+    "value": 5,
+    "comp": 0.9,
+    "rank": 5,
+    "wk": 0.01
+   },
+   "EUR": {
+    "trend": 2,
+    "carry": 4,
+    "value": 4,
+    "comp": -1.4,
+    "rank": 8,
+    "wk": 0.05
+   },
+   "GBP": {
+    "trend": 6,
+    "carry": 6,
+    "value": 4,
+    "comp": 0.5,
+    "rank": 6,
+    "wk": 0.12
+   },
+   "JPY": {
+    "trend": 3,
+    "carry": 3,
+    "value": 10,
+    "comp": 1.2,
+    "rank": 4,
+    "wk": -0.29
+   },
+   "CHF": {
+    "trend": 3,
+    "carry": 1,
+    "value": 2,
+    "comp": -3.2,
+    "rank": 10,
+    "wk": 0.0
+   },
+   "CNY": {
+    "trend": 10,
+    "carry": 5,
+    "value": 5,
+    "comp": 1.4,
+    "rank": 3,
+    "wk": -0.03
+   },
+   "HKD": {
+    "trend": null,
+    "carry": 6,
+    "value": null,
+    "comp": 1.5,
+    "rank": 2,
+    "wk": 0.01
+   },
+   "MYR": {
+    "trend": 2,
+    "carry": 5,
+    "value": 4,
+    "comp": -1.4,
+    "rank": 9,
+    "wk": -0.6
+   },
+   "ZAR": {
+    "trend": 6,
+    "carry": 10,
+    "value": 6,
+    "comp": 2.3,
+    "rank": 1,
+    "wk": -1.12
+   }
+  },
+  "churn": 4,
+  "backfilled": true
+ },
+ {
+  "week": "2026-07-24",
+  "rows": {
+   "SGD": {
+    "trend": 6,
+    "carry": 3,
+    "value": 4,
+    "comp": -1.0,
+    "rank": 7,
+    "wk": 0.0
+   },
+   "USD": {
+    "trend": 7,
+    "carry": 6,
+    "value": 5,
+    "comp": 1.0,
+    "rank": 5,
+    "wk": -0.02
+   },
+   "EUR": {
+    "trend": 3,
+    "carry": 4,
+    "value": 4,
+    "comp": -1.1,
+    "rank": 8,
+    "wk": -0.53
+   },
+   "GBP": {
+    "trend": 5,
+    "carry": 6,
+    "value": 4,
+    "comp": 0.2,
+    "rank": 6,
+    "wk": -0.87
+   },
+   "JPY": {
+    "trend": 3,
+    "carry": 3,
+    "value": 10,
+    "comp": 1.3,
+    "rank": 4,
+    "wk": -0.92
+   },
+   "CHF": {
+    "trend": 2,
+    "carry": 1,
+    "value": 2,
+    "comp": -3.4,
+    "rank": 10,
+    "wk": -1.32
+   },
+   "CNY": {
+    "trend": 10,
+    "carry": 5,
+    "value": 4,
+    "comp": 1.4,
+    "rank": 3,
+    "wk": 0.06
+   },
+   "HKD": {
+    "trend": null,
+    "carry": 6,
+    "value": null,
+    "comp": 1.5,
+    "rank": 2,
+    "wk": -0.05
+   },
+   "MYR": {
+    "trend": 3,
+    "carry": 5,
+    "value": 4,
+    "comp": -1.1,
+    "rank": 9,
+    "wk": 0.08
+   },
+   "ZAR": {
+    "trend": 3,
+    "carry": 10,
+    "value": 6,
+    "comp": 1.7,
+    "rank": 1,
+    "wk": -2.05
+   }
+  },
+  "churn": 0,
+  "backfilled": true
+ },
+ {
+  "week": "2026-07-31",
+  "rows": {
+   "SGD": {
+    "trend": 6,
+    "carry": 3,
+    "value": 4,
+    "comp": -1.0,
+    "rank": 7,
+    "wk": 0.0
+   },
+   "USD": {
+    "trend": 7,
+    "carry": 6,
+    "value": 5,
+    "comp": 0.9,
+    "rank": 5,
+    "wk": -0.47
+   },
+   "EUR": {
+    "trend": 3,
+    "carry": 4,
+    "value": 4,
+    "comp": -1.0,
+    "rank": 8,
+    "wk": 0.48
+   },
+   "GBP": {
+    "trend": 5,
+    "carry": 6,
+    "value": 4,
+    "comp": 0.1,
+    "rank": 6,
+    "wk": 0.26
+   },
+   "JPY": {
+    "trend": 3,
+    "carry": 3,
+    "value": 10,
+    "comp": 1.2,
+    "rank": 4,
+    "wk": 1.76
+   },
+   "CHF": {
+    "trend": 1,
+    "carry": 1,
+    "value": 2,
+    "comp": -3.7,
+    "rank": 10,
+    "wk": 0.45
+   },
+   "CNY": {
+    "trend": 10,
+    "carry": 5,
+    "value": 5,
+    "comp": 1.3,
+    "rank": 3,
+    "wk": -0.16
+   },
+   "HKD": {
+    "trend": null,
+    "carry": 6,
+    "value": null,
+    "comp": 1.5,
+    "rank": 2,
+    "wk": -0.48
+   },
+   "MYR": {
+    "trend": 2,
+    "carry": 5,
+    "value": 4,
+    "comp": -1.3,
+    "rank": 9,
+    "wk": -0.36
+   },
+   "ZAR": {
+    "trend": 6,
+    "carry": 10,
+    "value": 6,
+    "comp": 2.4,
+    "rank": 1,
+    "wk": 1.18
+   }
+  },
+  "churn": 0,
+  "alerts": [
+   "JPY broke +1.5% week band"
+  ]
+ }
+]

@@ -1,0 +1,118 @@
+{
+  "version": "1.0",
+  "base": "SGD",
+  "page_url": "",
+  "currencies": [
+    {
+      "code": "SGD",
+      "name": "Singapore dollar",
+      "bis": "SG",
+      "pegged": false,
+      "base": true
+    },
+    {
+      "code": "USD",
+      "name": "US dollar",
+      "bis": "US",
+      "pegged": false
+    },
+    {
+      "code": "EUR",
+      "name": "Euro",
+      "bis": "XM",
+      "pegged": false
+    },
+    {
+      "code": "GBP",
+      "name": "British pound",
+      "bis": "GB",
+      "pegged": false
+    },
+    {
+      "code": "JPY",
+      "name": "Japanese yen",
+      "bis": "JP",
+      "pegged": false
+    },
+    {
+      "code": "CHF",
+      "name": "Swiss franc",
+      "bis": "CH",
+      "pegged": false
+    },
+    {
+      "code": "CNY",
+      "name": "Chinese yuan",
+      "bis": "CN",
+      "pegged": false
+    },
+    {
+      "code": "HKD",
+      "name": "Hong Kong dollar",
+      "bis": "HK",
+      "pegged": true
+    },
+    {
+      "code": "MYR",
+      "name": "Malaysian ringgit",
+      "bis": "MY",
+      "pegged": false
+    },
+    {
+      "code": "ZAR",
+      "name": "South African rand",
+      "bis": "ZA",
+      "pegged": false
+    }
+  ],
+  "weights": {
+    "value": 0.4,
+    "trend": 0.3,
+    "carry": 0.3
+  },
+  "trend_weeks": [
+    13,
+    26
+  ],
+  "trend_blend": [
+    0.6,
+    0.4
+  ],
+  "value_lookback_weeks": 520,
+  "spark_weeks": 12,
+  "alert_week_band_pct": 1.5,
+  "comp_display_scale": 2.5,
+  "churn_bands": {
+    "calm": 6,
+    "lively": 14
+  },
+  "carry_seed": {
+    "as_of": "2026-08-08",
+    "note": "policy-rate proxies; SGD uses 3M compounded SORA; HKD is the HKMA base rate (actual HIBOR often trades below it); refreshed automatically from BIS CBPOL when reachable",
+    "rates": {
+      "SGD": 1.1,
+      "USD": 3.63,
+      "EUR": 2.25,
+      "GBP": 4.0,
+      "JPY": 1.0,
+      "CHF": 0.0,
+      "CNY": 3.0,
+      "HKD": 4.0,
+      "MYR": 2.75,
+      "ZAR": 7.0
+    },
+    "confidence": {
+      "GBP": "medium",
+      "CNY": "medium",
+      "ZAR": "medium",
+      "HKD": "medium"
+    }
+  },
+  "sources": {
+    "frankfurter": "https://api.frankfurter.dev/v1",
+    "h10_fallback": "https://raw.githubusercontent.com/datasets/exchange-rates/master/data/daily.csv",
+    "bis_eer": "https://stats.bis.org/api/v1/data/WS_EER/M.R.B.{codes}/all?format=csv&startPeriod={start}",
+    "bis_cbpol": "https://stats.bis.org/api/v1/data/WS_CBPOL/D.{codes}/all?format=csv&lastNObservations=1"
+  },
+  "holdings": null
+}

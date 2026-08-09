@@ -1,0 +1,36 @@
+name: weekly
+
+on:
+  schedule:
+    - cron: "30 21 * * 5"   # Friday 21:30 UTC = Saturday 05:30 Singapore
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build the week
+        env:
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          CALLMEBOT_PHONE: ${{ secrets.CALLMEBOT_PHONE }}
+          CALLMEBOT_APIKEY: ${{ secrets.CALLMEBOT_APIKEY }}
+        run: python build.py
+
+      - name: Commit the new edition
+        run: |
+          git config user.name "currency-drift"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html fx_scores.json data/history.json
+          git commit -m "weekly edition $(date -u +%F)" || echo "nothing new"
+          git push

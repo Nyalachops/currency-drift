@@ -1,0 +1,131 @@
+{
+ "as_of": "2026-07-31",
+ "week": "2026-07-31",
+ "base": "SGD",
+ "version": "1.0",
+ "drift_churn": 0,
+ "drift_band": "calm",
+ "value_source": "nominal 10y proxy",
+ "carry_source": "seed 2026-08-08",
+ "rates_source": "ECB (local snapshot)",
+ "alerts": [
+  "JPY broke +1.5% week band"
+ ],
+ "tiles": {
+  "increase": "ZAR",
+  "watch": "JPY",
+  "reduce": "CHF"
+ },
+ "currencies": {
+  "SGD": {
+   "trend": 6,
+   "carry": 3,
+   "value": 4,
+   "comp": -1.0,
+   "rank": 7,
+   "wk": 0.0,
+   "pegged": false,
+   "carry_rate_pct": 1.1,
+   "sgd_per_unit": 1.0
+  },
+  "USD": {
+   "trend": 7,
+   "carry": 6,
+   "value": 5,
+   "comp": 0.9,
+   "rank": 5,
+   "wk": -0.47,
+   "pegged": false,
+   "carry_rate_pct": 3.63,
+   "sgd_per_unit": 1.284893
+  },
+  "EUR": {
+   "trend": 3,
+   "carry": 4,
+   "value": 4,
+   "comp": -1.0,
+   "rank": 8,
+   "wk": 0.48,
+   "pegged": false,
+   "carry_rate_pct": 2.25,
+   "sgd_per_unit": 1.4757
+  },
+  "GBP": {
+   "trend": 5,
+   "carry": 6,
+   "value": 4,
+   "comp": 0.1,
+   "rank": 6,
+   "wk": 0.26,
+   "pegged": false,
+   "carry_rate_pct": 4.0,
+   "sgd_per_unit": 1.724493
+  },
+  "JPY": {
+   "trend": 3,
+   "carry": 3,
+   "value": 10,
+   "comp": 1.2,
+   "rank": 4,
+   "wk": 1.76,
+   "pegged": false,
+   "carry_rate_pct": 1.0,
+   "sgd_per_unit": 0.008019
+  },
+  "CHF": {
+   "trend": 1,
+   "carry": 1,
+   "value": 2,
+   "comp": -3.7,
+   "rank": 10,
+   "wk": 0.45,
+   "pegged": false,
+   "carry_rate_pct": 0.0,
+   "sgd_per_unit": 1.586092
+  },
+  "CNY": {
+   "trend": 10,
+   "carry": 5,
+   "value": 5,
+   "comp": 1.3,
+   "rank": 3,
+   "wk": -0.16,
+   "pegged": false,
+   "carry_rate_pct": 3.0,
+   "sgd_per_unit": 0.190317
+  },
+  "HKD": {
+   "trend": null,
+   "carry": 6,
+   "value": null,
+   "comp": 1.5,
+   "rank": 2,
+   "wk": -0.48,
+   "pegged": true,
+   "carry_rate_pct": 4.0,
+   "sgd_per_unit": 0.163823
+  },
+  "MYR": {
+   "trend": 2,
+   "carry": 5,
+   "value": 4,
+   "comp": -1.3,
+   "rank": 9,
+   "wk": -0.36,
+   "pegged": false,
+   "carry_rate_pct": 2.75,
+   "sgd_per_unit": 0.314427
+  },
+  "ZAR": {
+   "trend": 6,
+   "carry": 10,
+   "value": 6,
+   "comp": 2.4,
+   "rank": 1,
+   "wk": 1.18,
+   "pegged": false,
+   "carry_rate_pct": 7.0,
+   "sgd_per_unit": 0.07752
+  }
+ }
+}
