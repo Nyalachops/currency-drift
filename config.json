@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "base": "SGD",
-  "page_url": "",
+  "page_url": "https://nyalachops.github.io/currency-drift/",
   "currencies": [
     {
       "code": "SGD",
