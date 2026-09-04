@@ -1403,5 +1403,96 @@
   },
   "churn": 0,
   "alerts": []
+ },
+ {
+  "week": "2026-09-04",
+  "rows": {
+   "SGD": {
+    "trend": 6,
+    "carry": 3,
+    "value": 3,
+    "comp": -1.0,
+    "rank": 8,
+    "wk": 0.0
+   },
+   "USD": {
+    "trend": 4,
+    "carry": 6,
+    "value": 4,
+    "comp": -0.4,
+    "rank": 6,
+    "wk": -0.35
+   },
+   "EUR": {
+    "trend": 5,
+    "carry": 4,
+    "value": 4,
+    "comp": -0.6,
+    "rank": 7,
+    "wk": -0.53
+   },
+   "GBP": {
+    "trend": 6,
+    "carry": 6,
+    "value": 3,
+    "comp": -0.2,
+    "rank": 5,
+    "wk": -0.73
+   },
+   "JPY": {
+    "trend": 7,
+    "carry": 3,
+    "value": 10,
+    "comp": 2.7,
+    "rank": 1,
+    "wk": 1.84
+   },
+   "CHF": {
+    "trend": 0,
+    "carry": 1,
+    "value": 5,
+    "comp": -2.9,
+    "rank": 10,
+    "wk": -0.96
+   },
+   "CNY": {
+    "trend": 7,
+    "carry": 5,
+    "value": 6,
+    "comp": 1.1,
+    "rank": 4,
+    "wk": -0.2
+   },
+   "HKD": {
+    "trend": null,
+    "carry": 7,
+    "value": null,
+    "comp": 1.5,
+    "rank": 3,
+    "wk": -0.36
+   },
+   "MYR": {
+    "trend": 2,
+    "carry": 5,
+    "value": 4,
+    "comp": -1.3,
+    "rank": 9,
+    "wk": -0.8
+   },
+   "ZAR": {
+    "trend": 9,
+    "carry": 10,
+    "value": 3,
+    "comp": 2.2,
+    "rank": 2,
+    "wk": -0.13
+   }
+  },
+  "churn": 2,
+  "alerts": [
+   "USD flipped negative",
+   "GBP flipped negative",
+   "JPY broke +1.5% week band"
+  ]
  }
 ]
