@@ -1949,5 +1949,97 @@
    "CNY entered top 3",
    "ZAR left top 3"
   ]
+ },
+ {
+  "week": "2026-10-16",
+  "rows": {
+   "SGD": {
+    "trend": 6,
+    "carry": 3,
+    "value": 3,
+    "comp": -1.1,
+    "rank": 8,
+    "wk": 0.0
+   },
+   "USD": {
+    "trend": 6,
+    "carry": 6,
+    "value": 4,
+    "comp": 0.1,
+    "rank": 5,
+    "wk": -0.09
+   },
+   "EUR": {
+    "trend": 1,
+    "carry": 4,
+    "value": 4,
+    "comp": -1.6,
+    "rank": 9,
+    "wk": 0.33
+   },
+   "GBP": {
+    "trend": 4,
+    "carry": 6,
+    "value": 3,
+    "comp": -0.8,
+    "rank": 6,
+    "wk": 0.78
+   },
+   "JPY": {
+    "trend": 9,
+    "carry": 3,
+    "value": 10,
+    "comp": 3.1,
+    "rank": 1,
+    "wk": 0.06
+   },
+   "CHF": {
+    "trend": 1,
+    "carry": 1,
+    "value": 5,
+    "comp": -2.6,
+    "rank": 10,
+    "wk": 0.77
+   },
+   "CNY": {
+    "trend": 8,
+    "carry": 5,
+    "value": 6,
+    "comp": 1.5,
+    "rank": 3,
+    "wk": -0.0
+   },
+   "HKD": {
+    "trend": null,
+    "carry": 7,
+    "value": null,
+    "comp": 1.7,
+    "rank": 2,
+    "wk": -0.1
+   },
+   "MYR": {
+    "trend": 4,
+    "carry": 5,
+    "value": 4,
+    "comp": -0.8,
+    "rank": 7,
+    "wk": -0.0
+   },
+   "ZAR": {
+    "trend": 6,
+    "carry": 10,
+    "value": 3,
+    "comp": 1.2,
+    "rank": 4,
+    "wk": 0.51
+   }
+  },
+  "churn": 6,
+  "alerts": [
+   "CNY entered top 3",
+   "ZAR left top 3",
+   "SGD entered bottom 3",
+   "MYR left bottom 3"
+  ]
  }
 ]
