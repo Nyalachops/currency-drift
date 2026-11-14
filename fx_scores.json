@@ -1,6 +1,6 @@
 {
- "as_of": "2026-11-06",
- "week": "2026-11-06",
+ "as_of": "2026-11-13",
+ "week": "2026-11-13",
  "base": "SGD",
  "version": "1.0",
  "drift_churn": 6,
@@ -10,12 +10,14 @@
  "rates_source": "ECB",
  "alerts": [
   "CNY entered top 3",
-  "ZAR left top 3"
+  "ZAR left top 3",
+  "CHF broke -1.5% week band",
+  "ZAR broke -1.5% week band"
  ],
  "tiles": {
   "increase": "JPY",
   "watch": "ZAR",
-  "reduce": "EUR"
+  "reduce": "CHF"
  },
  "currencies": {
   "SGD": {
@@ -33,34 +35,34 @@
    "trend": 7,
    "carry": 6,
    "value": 4,
-   "comp": 0.3,
-   "rank": 5,
-   "wk": 0.25,
+   "comp": 0.5,
+   "rank": 4,
+   "wk": 0.51,
    "pegged": false,
    "carry_rate_pct": 3.875,
-   "sgd_per_unit": 1.2815912236633005
+   "sgd_per_unit": 1.2880954221088698
   },
   "EUR": {
-   "trend": 0,
+   "trend": 1,
    "carry": 4,
    "value": 4,
-   "comp": -2.2,
-   "rank": 10,
-   "wk": 0.19,
+   "comp": -1.8,
+   "rank": 9,
+   "wk": -0.51,
    "pegged": false,
    "carry_rate_pct": 2.5,
-   "sgd_per_unit": 1.4309017542855507
+   "sgd_per_unit": 1.4236091338762031
   },
   "GBP": {
    "trend": 5,
    "carry": 6,
    "value": 3,
-   "comp": -0.5,
+   "comp": -0.4,
    "rank": 6,
-   "wk": 0.15,
+   "wk": -0.68,
    "pegged": false,
-   "carry_rate_pct": 3.75,
-   "sgd_per_unit": 1.7154129856763016
+   "carry_rate_pct": 4.0,
+   "sgd_per_unit": 1.7036936077415836
   },
   "JPY": {
    "trend": 6,
@@ -68,43 +70,43 @@
    "value": 10,
    "comp": 2.3,
    "rank": 1,
-   "wk": -0.43,
+   "wk": -0.54,
    "pegged": false,
    "carry_rate_pct": 1.25,
-   "sgd_per_unit": 0.008094544277157195
+   "sgd_per_unit": 0.008050881571532083
   },
   "CHF": {
-   "trend": 2,
+   "trend": 1,
    "carry": 1,
    "value": 5,
-   "comp": -2.0,
-   "rank": 9,
-   "wk": 0.75,
+   "comp": -2.3,
+   "rank": 10,
+   "wk": -1.83,
    "pegged": false,
    "carry_rate_pct": 0.0,
-   "sgd_per_unit": 1.5650187019734885
+   "sgd_per_unit": 1.5363579099386995
   },
   "CNY": {
    "trend": 9,
    "carry": 5,
    "value": 6,
-   "comp": 1.8,
+   "comp": 1.7,
    "rank": 2,
-   "wk": -0.02,
+   "wk": 0.5,
    "pegged": false,
    "carry_rate_pct": 3.0,
-   "sgd_per_unit": 0.19210450485063876
+   "sgd_per_unit": 0.1930613742108616
   },
   "HKD": {
    "trend": null,
    "carry": 7,
    "value": null,
-   "comp": 1.7,
+   "comp": 1.6,
    "rank": 3,
-   "wk": 0.36,
+   "wk": 0.4,
    "pegged": true,
    "carry_rate_pct": 4.25,
-   "sgd_per_unit": 0.16352160120351897
+   "sgd_per_unit": 0.1641712634620436
   },
   "MYR": {
    "trend": 5,
@@ -112,21 +114,21 @@
    "value": 4,
    "comp": -0.5,
    "rank": 7,
-   "wk": 0.2,
+   "wk": -0.19,
    "pegged": false,
    "carry_rate_pct": 2.75,
-   "sgd_per_unit": 0.3157362970447083
+   "sgd_per_unit": 0.31512936060252733
   },
   "ZAR": {
-   "trend": 4,
+   "trend": 2,
    "carry": 10,
    "value": 3,
-   "comp": 0.7,
-   "rank": 4,
-   "wk": 1.17,
+   "comp": 0.2,
+   "rank": 5,
+   "wk": -2.01,
    "pegged": false,
    "carry_rate_pct": 7.25,
-   "sgd_per_unit": 0.0774929481417191
+   "sgd_per_unit": 0.07593302707012416
   }
  }
 }
